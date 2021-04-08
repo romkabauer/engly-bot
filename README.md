@@ -11,7 +11,6 @@ Done:
 - run in container
 
 Doing:
-- TASK: add more questions
 - BUG: if there is no "replacements" in gramma check API answer - bot reply fails
 
 To Do:
