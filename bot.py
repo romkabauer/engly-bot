@@ -1,7 +1,5 @@
-#%%
 import logging
 import typing
-import ffprobe
 import json
 import random
 import sys
@@ -9,14 +7,17 @@ import sys
 from os import remove
 from pydub import AudioSegment
 from aiohttp import request
+import aiohttp
 
 from aiogram import Bot, Dispatcher, executor, types, filters
-from aiogram.types.message import ContentType
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
+from aiogram.types.message import ContentType
 from aiogram.utils.callback_data import CallbackData
 from aiogram.utils.exceptions import MessageNotModified
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import FSMContext
+from asyncio import AbstractEventLoop
+import asyncio
 
 from google.cloud import speech_v1 as speech
 
@@ -29,12 +30,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-bot = Bot(token=TOKEN)
+loop: AbstractEventLoop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop=loop)
+
+bot = Bot(token=TOKEN, loop=loop)
 
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
 
-download_voices_path = '/Users/roman_bauer/Google Drive (pm.rvbauer@gmail.com)/TelegramBot_test/voices/ogg/'
+session: aiohttp.ClientSession = aiohttp.ClientSession()
+
+download_voices_path = '/home/app/voices/ogg/'
+converted_path = '/home/app/voices/flac/'
+api_key_path = '/home/app/google_sr_token.json'
 
 def cancel_keyboard():
     return types.ReplyKeyboardMarkup().row(*(
@@ -42,7 +50,6 @@ def cancel_keyboard():
         ))
 
 def speech_to_text(config, audio):
-    api_key_path = '/Users/roman_bauer/Google Drive (pm.rvbauer@gmail.com)/TelegramBot_test/to_ignore/english-telegram-bot-309908-da3ea19a17bf.json'
     client = speech.SpeechClient.from_service_account_json(api_key_path)
     response = client.recognize(config=config, audio=audio)
     return get_transcript(response)
@@ -55,8 +62,6 @@ def get_transcript(response):
     return results
 
 def convert_voice(download_voices_path, message):
-    converted_path = '/Users/roman_bauer/Google Drive (pm.rvbauer@gmail.com)/TelegramBot_test/voices/flac/'
-    
     ogg_voice = AudioSegment.from_ogg(download_voices_path + str(message.message_id) + '.ogg')
     ogg_voice.export(converted_path + str(message.message_id) + '.flac', format='flac')
 
@@ -237,6 +242,7 @@ async def interview_questions_handler(message: types.Message, state: FSMContext)
             await message.reply(text="".join(data['results']), 
                 reply_markup=types.ReplyKeyboardRemove(),
                 parse_mode='Markdown')
+            await state.reset_state()
 
 @dp.message_handler(content_types=ContentType.VOICE)
 async def voices_handler(message: types.Message):
@@ -253,10 +259,11 @@ async def voices_handler(message: types.Message):
             parse_mode='Markdown',
             reply_markup=types.ReplyKeyboardRemove())
 
-async def main():
-    try:
-        await dp.start_polling()
-    finally:
-        await bot.close()
+async def shutdown(dp):
+    await dp.storage.close()
+    await dp.storage.wait_closed()
+    await session.close()
 
-await main()
+if __name__ == '__main__':
+    print("start")
+    executor.start_polling(dp, on_shutdown=shutdown, loop=loop)
