@@ -18,7 +18,16 @@ MESSAGES = {
 }
 
 QUESTIONS = [
-    "👩‍💼 What's your Name?",
     "👩‍💼 Tell me shortly about yourself.",
-    "👩‍💼 Tell me about your experience at the previous workplace.",
+    "👩‍💼 Tell me about your educational background."
+    "👩‍💼 Why are you leaving your current job?",
+    "👩‍💼 What is your responsibilities at your current job?",
+    "👩‍💼 What major challenges and problems did you ever face? How did you handle them?",
+    "👩‍💼 What was the biggest accomplishment/failure in your current/previous position?",
+    "👩‍💼 How do you handle stress and pressure?",
+    "👩‍💼 What motivates you?",
+    "👩‍💼 What applicable experience do you have?",
+    "👩‍💼 What strength will help you the most to succeed?",
+    "👩‍💼 What can you contribute to this company?",
+    "👩‍💼 What are your salary expectations?",
 ]
