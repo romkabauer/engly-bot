@@ -42,7 +42,7 @@ def cancel_keyboard():
         ))
 
 def speech_to_text(config, audio):
-    api_key_path = '/Users/roman_bauer/Google Drive (pm.rvbauer@gmail.com)/TelegramBot_test/english-telegram-bot-309908-da3ea19a17bf.json'
+    api_key_path = '/Users/roman_bauer/Google Drive (pm.rvbauer@gmail.com)/TelegramBot_test/to_ignore/english-telegram-bot-309908-da3ea19a17bf.json'
     client = speech.SpeechClient.from_service_account_json(api_key_path)
     response = client.recognize(config=config, audio=audio)
     return get_transcript(response)
@@ -113,7 +113,10 @@ async def process_voice(message):
     remove(download_voices_path + str(message.message_id) + '.ogg')
     remove(converted_file_path)
 
-    return speech_to_text(config, audio)[0]
+    try:
+        return speech_to_text(config, audio)[0]
+    except IndexError:
+        return None
 
 @dp.message_handler(state='*', commands='start')
 async def start_cmd_handler(message: types.Message, state: FSMContext):
@@ -218,6 +221,8 @@ async def all_msg_handler(message: types.Message):
 @dp.message_handler(state=InterviewStates.question_number, content_types=ContentType.VOICE)
 async def interview_questions_handler(message: types.Message, state: FSMContext):
     text_from_voice = await process_voice(message)
+    if text_from_voice == None:
+        text_from_voice = "Sorry, can't recognize"
     current_state = await state.get_state()
     logger.debug(current_state)
     async with state.proxy() as data:
@@ -236,11 +241,17 @@ async def interview_questions_handler(message: types.Message, state: FSMContext)
 @dp.message_handler(content_types=ContentType.VOICE)
 async def voices_handler(message: types.Message):
     text_from_voice = await process_voice(message)
-    await message.reply('If I understood you correctly, you said:\n\n' + text_from_voice)
-    logger.debug('Checking results: %r', await check_answer(text_from_voice))
-    await message.reply(format_errors_explanation(await check_answer(text_from_voice)), 
-        parse_mode='Markdown',
-        reply_markup=types.ReplyKeyboardRemove())
+    if text_from_voice == None:
+        text_from_voice = "Sorry, can't recognize"
+        await message.reply((text_from_voice), 
+            parse_mode='Markdown',
+            reply_markup=types.ReplyKeyboardRemove())
+    else:
+        await message.reply('If I understood you correctly, you said:\n\n' + text_from_voice)
+        logger.debug('Checking results: %r', await check_answer(text_from_voice))
+        await message.reply(format_errors_explanation(await check_answer(text_from_voice)), 
+            parse_mode='Markdown',
+            reply_markup=types.ReplyKeyboardRemove())
 
 async def main():
     try:
