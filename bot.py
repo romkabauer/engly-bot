@@ -96,23 +96,31 @@ async def check_answer(answer):
 
 def format_errors_explanation(errors):
     if len(errors['matches']) == 0:
-        message = 'Really nice! I want to highlight your brilliant English! No errors at all.'
+        return MESSAGES['no_errors']
     else:
-        message = 'I have noticed following errors in your speech:\n\n'
+        message = ''
+        if errors['language']['code'] != errors['language']['detectedLanguage']['code']:
+            message += f"Are you sure, it's in English? I guess it's {errors['language']['detectedLanguage']['name']} with" \
+                + f"{errors['language']['detectedLanguage']['confidence']}% confidence.\n" \
+                + "Anyway, "
+        message += 'I have noticed following errors in your speech:\n\n'
 
         for ind, error in enumerate(errors['matches']):
             message += str(ind+1) + '. ' \
                 + '*Error type:* ' + error['rule']['issueType']\
-                + '. ' + error['message'] \
-                + '\n*Original:* ' + error['sentence'] \
-                + '\n*Advice:* Probably, you should use: ' \
-                + ' / '.join(x['value'] for x in error['replacements']) \
-                + '\n*Correct sentences:* ' \
-                + error['context']['text'][:error['context']['offset']] \
-                + error['replacements'][0]['value'] \
-                + error['context']['text'][error['context']['offset'] + error['context']['length']:] \
-                + '\n\n'
-    return message
+                + '. ' + error['message']
+            if len(error['replacements']) == 0:
+                return message
+            else:
+                message += '\n*Original:* ' + error['sentence'] \
+                    + '\n*Advice:* Probably, you should use: ' \
+                    + ' / '.join(x['value'] for x in error['replacements']) \
+                    + '\n*Correct sentences:* ' \
+                    + error['context']['text'][:error['context']['offset']] \
+                    + error['replacements'][0]['value'] \
+                    + error['context']['text'][error['context']['offset'] + error['context']['length']:] \
+                    + '\n\n'
+                return message
 
 async def process_voice(message):
     logger.debug(message)
