@@ -4,8 +4,8 @@ WORKDIR /home
 ADD . ./app
 
 RUN apk update
-RUN  apk add python3-distutils
-RUN apk add ffmpeg
+RUN  apk add --no-cache py3-setuptools
+RUN apk add --no-cache ffmpeg
 
 RUN pip install --upgrade pip
 COPY requirements.txt requirements.txt
