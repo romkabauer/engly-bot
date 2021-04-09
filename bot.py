@@ -153,7 +153,7 @@ async def interview_cmd_handler(message: types.Message, state: FSMContext):
 @dp.message_handler(commands='list')
 async def list_cmd_handler(message: types.Message):
     reply_message = "Let's pick a question you want to answer:"
-    await message.reply(reply_message, reply_markup=types.ReplyKeyboardMarkup().row(*(
+    await message.reply(reply_message, reply_markup=types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True).row(*(
             types.KeyboardButton(x) for x in QUESTIONS
         ),
         types.KeyboardButton('🙅 Cancel')),
@@ -212,7 +212,8 @@ async def all_msg_handler(message: types.Message):
             + "\nYou can answer via text or voice message."
         await message.reply(reply_message, 
             parse_mode='Markdown', 
-            reply_markup=types.ReplyKeyboardRemove())
+            reply_markup=types.ReplyKeyboardRemove(),
+            reply=False)
     elif message.text == '🙅 Cancel':
         await message.reply(MESSAGES['agree_practice'],
             parse_mode='Markdown',

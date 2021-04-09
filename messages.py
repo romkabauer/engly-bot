@@ -19,7 +19,7 @@ MESSAGES = {
 
 QUESTIONS = [
     "👩‍💼 Tell me shortly about yourself.",
-    "👩‍💼 Tell me about your educational background."
+    "👩‍💼 Tell me about your educational background.",
     "👩‍💼 Why are you leaving your current job?",
     "👩‍💼 What is your responsibilities at your current job?",
     "👩‍💼 What major challenges and problems did you ever face? How did you handle them?",
