@@ -153,7 +153,7 @@ async def interview_cmd_handler(message: types.Message, state: FSMContext):
 @dp.message_handler(commands='list')
 async def list_cmd_handler(message: types.Message):
     reply_message = "Let's pick a question you want to answer:"
-    await message.reply(reply_message, reply_markup=types.ReplyKeyboardMarkup(row_width=3, resize_keyboard=True).row(*(
+    await message.reply(reply_message, reply_markup=types.ReplyKeyboardMarkup(row_width=10, resize_keyboard=True).row(*(
             types.KeyboardButton(x) for x in QUESTIONS
         ),
         types.KeyboardButton('🙅 Cancel')),
