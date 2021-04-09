@@ -100,9 +100,9 @@ def format_errors_explanation(errors):
     else:
         message = ''
         if errors['language']['code'] != errors['language']['detectedLanguage']['code']:
-            message += f"Are you sure, it's in English? I guess it's {errors['language']['detectedLanguage']['name']} with" \
+            message += f"Are you sure, it's in English? I guess it's {errors['language']['detectedLanguage']['name']} with " \
                 + f"{errors['language']['detectedLanguage']['confidence']}% confidence.\n" \
-                + "Anyway, "
+                + "Anyway, if it is English, "
         message += 'I have noticed following errors in your speech:\n\n'
 
         for ind, error in enumerate(errors['matches']):
