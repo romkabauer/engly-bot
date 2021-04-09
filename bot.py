@@ -49,6 +49,12 @@ def cancel_keyboard():
             types.KeyboardButton('🙅 Cancel'),
         ))
 
+def list_keyboard():
+    keyboard = types.ReplyKeyboardMarkup(row_width=10, resize_keyboard=True)
+    for q in QUESTIONS:
+        keyboard.row(*(types.KeyboardButton(q)))
+    return keyboard.row(*(types.KeyboardButton('🙅 Cancel')))
+
 def speech_to_text(config, audio):
     client = speech.SpeechClient.from_service_account_json(api_key_path)
     response = client.recognize(config=config, audio=audio)
@@ -153,10 +159,7 @@ async def interview_cmd_handler(message: types.Message, state: FSMContext):
 @dp.message_handler(commands='list')
 async def list_cmd_handler(message: types.Message):
     reply_message = "Let's pick a question you want to answer:"
-    await message.reply(reply_message, reply_markup=types.ReplyKeyboardMarkup(row_width=10, resize_keyboard=True).row(*(
-            types.KeyboardButton(x) for x in QUESTIONS
-        ),
-        types.KeyboardButton('🙅 Cancel')),
+    await message.reply(reply_message, reply_markup=list_keyboard(),
         reply=False
     )
 
