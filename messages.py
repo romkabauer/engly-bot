@@ -17,7 +17,7 @@ MESSAGES = {
     'interview_done': interview_done
 }
 
-QUESTIONS = [
+QUESTIONS = (
     "👩‍💼 Tell me shortly about yourself.",
     "👩‍💼 Tell me about your educational background.",
     "👩‍💼 Why are you leaving your current job?",
@@ -30,4 +30,4 @@ QUESTIONS = [
     "👩‍💼 What strength will help you the most to succeed?",
     "👩‍💼 What can you contribute to this company?",
     "👩‍💼 What are your salary expectations?",
-]
+)

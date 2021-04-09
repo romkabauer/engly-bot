@@ -50,10 +50,15 @@ def cancel_keyboard():
         ))
 
 def list_keyboard():
-    keyboard = types.ReplyKeyboardMarkup(row_width=10, resize_keyboard=True)
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     for q in QUESTIONS:
-        keyboard.row(*(types.KeyboardButton(q)))
-    return keyboard.row(*(types.KeyboardButton('🙅 Cancel')))
+        keyboard.row(*(
+                types.KeyboardButton(q),
+                ))
+    keyboard.row(*(
+            types.KeyboardButton('🙅 Cancel'),
+        ))
+    return keyboard
 
 def speech_to_text(config, audio):
     client = speech.SpeechClient.from_service_account_json(api_key_path)
