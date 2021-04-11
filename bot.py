@@ -178,17 +178,20 @@ async def list_cmd_handler(message: types.Message):
 
 @dp.message_handler(text='😃 Yeah, great!')
 async def msg_handler(message: types.Message):
+    logger.debug(message)
     logger.debug('The answer is %r', message.text)
     await message.reply(MESSAGES['agree_practice'], reply_markup=types.ReplyKeyboardRemove())
 
 @dp.message_handler(text='🤨 You? Teaching me? I\'d better die!')
 async def msg_handler(message: types.Message):
+    logger.debug(message)
     logger.debug('The answer is %r', message.text)
     reply_text = "Oh no! Why?"
     await message.reply(reply_text, reply_markup=types.ReplyKeyboardRemove())
 
 @dp.message_handler(text='🤨 You now... Fuck off, pal, I\'d handle it by myself.')
 async def msg_handler(message: types.Message):
+    logger.debug(message)
     logger.debug('The answer is %r', message.text)
     reply_text = "Good luck with your application, you dick🤪"
     await message.reply(reply_text, reply_markup=types.ReplyKeyboardRemove())
@@ -196,6 +199,7 @@ async def msg_handler(message: types.Message):
 @dp.message_handler(state = InterviewStates.question_number)
 async def interview_questions_handler(message: types.Message, state: FSMContext):
     if message.text == '🙅 Cancel':
+        logger.debug(message)
         async with state.proxy() as data:
             data['results'].append(MESSAGES['canceled_interview'])
             await message.reply(text="".join(data['results']), 
@@ -204,6 +208,7 @@ async def interview_questions_handler(message: types.Message, state: FSMContext)
             await state.reset_state()
     else:
         current_state = await state.get_state()
+        logger.debug(message)
         logger.debug(current_state)
         async with state.proxy() as data:
             data['results'].append("\n\n" + "*Question:* " + QUESTIONS[data['question_number']] + "\n" \
@@ -221,6 +226,7 @@ async def interview_questions_handler(message: types.Message, state: FSMContext)
 
 @dp.message_handler()
 async def all_msg_handler(message: types.Message):
+    logger.debug(message)
     logger.debug('The answer is %r', message.text)
 
     if message.text in QUESTIONS:
@@ -246,7 +252,6 @@ async def interview_questions_handler(message: types.Message, state: FSMContext)
     if text_from_voice == None:
         text_from_voice = "Sorry, can't recognize"
     current_state = await state.get_state()
-    logger.debug(current_state)
     async with state.proxy() as data:
         data['results'].append("\n\n" + "*Question:* " + QUESTIONS[data['question_number']] + "\n" \
             + "*Your answer:* " + text_from_voice + "\n" \
@@ -266,6 +271,7 @@ async def voices_handler(message: types.Message):
     text_from_voice = await process_voice(message)
     if text_from_voice == None:
         text_from_voice = "Sorry, can't recognize"
+        logger.debug(text_from_voice)
         await message.reply((text_from_voice), 
             parse_mode='Markdown',
             reply_markup=types.ReplyKeyboardRemove())
