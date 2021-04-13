@@ -10,6 +10,9 @@ canceled_interview = "\n\n*🤷 It is upseting that you didn't finish interview.
 interview_done = "🎉 *Congratulations! You walked through the interview!* 🎉\n\n" \
     + "Let's review your results:\n"
 no_errors = 'Really nice! I want to highlight your brilliant English! No errors at all.'
+next_step = "\n\n*If you want practice further, you can choose /random HR question" \
+    + " or questions from the /list. " \
+    + "I can emulate the whole /interview for you as well.*"
 
 MESSAGES = {
     'welcome_message': welcome_message,
@@ -17,6 +20,7 @@ MESSAGES = {
     'canceled_interview': canceled_interview,
     'interview_done': interview_done,
     'no_errors': no_errors
+    'next_step': next_step
 }
 
 QUESTIONS = (

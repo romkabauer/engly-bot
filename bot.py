@@ -219,6 +219,7 @@ async def interview_questions_handler(message: types.Message, state: FSMContext)
                 await message.reply(text=QUESTIONS[data['question_number']], 
                     reply_markup=cancel_keyboard(),reply=False)
             except IndexError:
+                data['results'].append(MESSAGES['next_step'])
                 await message.reply("".join(data['results']), 
                     reply_markup=types.ReplyKeyboardRemove(),
                     parse_mode='Markdown')
@@ -237,12 +238,13 @@ async def all_msg_handler(message: types.Message):
             reply_markup=types.ReplyKeyboardRemove(),
             reply=False)
     elif message.text == '🙅 Cancel':
-        await message.reply(MESSAGES['agree_practice'],
+        await message.reply(MESSAGES['next_step'],
             parse_mode='Markdown',
             reply_markup=types.ReplyKeyboardRemove()
         )
     else:
-        await message.reply(format_errors_explanation(await check_answer(message.text)),
+        await message.reply(format_errors_explanation(await check_answer(message.text)) \
+            + MESSAGES['next_step'],
             parse_mode='Markdown',
             reply_markup=types.ReplyKeyboardRemove())
 
@@ -261,6 +263,7 @@ async def interview_questions_handler(message: types.Message, state: FSMContext)
             await message.reply(text=QUESTIONS[data['question_number']], 
                 reply_markup=cancel_keyboard(), reply=False)
         except IndexError:
+            data['results'].append(MESSAGES['next_step'])
             await message.reply(text="".join(data['results']), 
                 reply_markup=types.ReplyKeyboardRemove(),
                 parse_mode='Markdown')
@@ -278,7 +281,8 @@ async def voices_handler(message: types.Message):
     else:
         await message.reply('If I understood you correctly, you said:\n\n' + text_from_voice)
         logger.debug('Checking results: %r', await check_answer(text_from_voice))
-        await message.reply(format_errors_explanation(await check_answer(text_from_voice)), 
+        await message.reply(format_errors_explanation(await check_answer(text_from_voice)) \
+            + data['results'].append(MESSAGES['next_step']), 
             parse_mode='Markdown',
             reply_markup=types.ReplyKeyboardRemove())
 
