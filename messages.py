@@ -19,7 +19,7 @@ MESSAGES = {
     'agree_practice': agree_practice,
     'canceled_interview': canceled_interview,
     'interview_done': interview_done,
-    'no_errors': no_errors
+    'no_errors': no_errors,
     'next_step': next_step
 }
 
