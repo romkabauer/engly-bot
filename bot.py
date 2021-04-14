@@ -145,6 +145,7 @@ async def process_voice(message):
 @dp.message_handler(state='*', commands='start')
 async def start_cmd_handler(message: types.Message, state: FSMContext):
     state.reset_state()
+    logger.debug(message)
     await message.reply(f"Hi, {message.from_user.first_name}! " + MESSAGES['welcome_message'],
         reply_markup=types.ReplyKeyboardMarkup().row(*(
             types.KeyboardButton('😃 Yeah, great!'), 
@@ -154,11 +155,13 @@ async def start_cmd_handler(message: types.Message, state: FSMContext):
 
 @dp.message_handler(commands='random')
 async def random_cmd_handler(message: types.Message): 
+    logger.debug(message)
     reply_message = f"*{random.choice(QUESTIONS)}*" + MESSAGES['exercise']
     await message.reply(reply_message, parse_mode='Markdown', reply=False)
 
 @dp.message_handler(state='*', commands='interview')
 async def interview_cmd_handler(message: types.Message, state: FSMContext):
+    logger.debug(message)
     await InterviewStates.results.set()
     async with state.proxy() as data:
         data['results'] = [MESSAGES['interview_done']]
@@ -173,6 +176,7 @@ async def interview_cmd_handler(message: types.Message, state: FSMContext):
 
 @dp.message_handler(commands='list')
 async def list_cmd_handler(message: types.Message):
+    logger.debug(message)
     reply_message = "Let's pick a question you want to answer:"
     await message.reply(reply_message, reply_markup=list_keyboard(),
         reply=False
