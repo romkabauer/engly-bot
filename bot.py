@@ -154,7 +154,7 @@ async def start_cmd_handler(message: types.Message, state: FSMContext):
 
 @dp.message_handler(commands='random')
 async def random_cmd_handler(message: types.Message): 
-    reply_message = f"*{random.choice(QUESTIONS)}*\n\nHere you go!\nYou can answer via text or voice message."
+    reply_message = f"*{random.choice(QUESTIONS)}*" + MESSAGES['exercise']
     await message.reply(reply_message, parse_mode='Markdown', reply=False)
 
 @dp.message_handler(state='*', commands='interview')
@@ -164,7 +164,9 @@ async def interview_cmd_handler(message: types.Message, state: FSMContext):
         data['results'] = [MESSAGES['interview_done']]
         await InterviewStates.question_number.set()
         data['question_number'] = 0
-    await message.reply("Answer the question below or click 'Cancel' to finish interview immediately. \n\n*" + QUESTIONS[0] + "*",
+    await message.reply("Answer the question below via TEXT or VOICE" \
+        +" or click 'Cancel' to finish interview immediately. \n\n*" \
+        + QUESTIONS[0] + "*",
         reply_markup=cancel_keyboard(),
         parse_mode='Markdown',
         reply=False)
@@ -216,7 +218,7 @@ async def interview_questions_handler(message: types.Message, state: FSMContext)
                 + "*Result:* " + format_errors_explanation(await check_answer(message.text)))
             data['question_number'] += 1
             try:
-                await message.reply(text=QUESTIONS[data['question_number']], 
+                await message.reply(text=QUESTIONS[data['question_number']]+ MESSAGES['exercise'], 
                     reply_markup=cancel_keyboard(),reply=False)
             except IndexError:
                 data['results'].append(MESSAGES['next_step'])
@@ -231,8 +233,7 @@ async def all_msg_handler(message: types.Message):
     logger.debug('The answer is %r', message.text)
 
     if message.text in QUESTIONS:
-        reply_message = f"*{message.text}*\n\nHere you go!" \
-            + "\nYou can answer via text or voice message."
+        reply_message = f"*{message.text}*" + MESSAGES['exercise']
         await message.reply(reply_message, 
             parse_mode='Markdown', 
             reply_markup=types.ReplyKeyboardRemove(),
