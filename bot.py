@@ -32,7 +32,7 @@ logger.setLevel(logging.DEBUG)
 loop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop=loop)
 
-bot = Bot(token=os.environ("BOT_TOKEN"), loop=loop)
+bot = Bot(token=os.environ["BOT_TOKEN"], loop=loop)
 
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
