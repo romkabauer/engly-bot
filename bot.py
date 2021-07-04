@@ -4,7 +4,7 @@ import json
 import random
 import sys
 
-from os import remove
+from os import remove, environ
 from pydub import AudioSegment
 from aiohttp import request
 import aiohttp
@@ -21,7 +21,6 @@ import asyncio
 
 from google.cloud import speech_v1 as speech
 
-from config import TOKEN
 from messages import MESSAGES, QUESTIONS
 from utils import InterviewStates
 
@@ -33,7 +32,7 @@ logger.setLevel(logging.DEBUG)
 loop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop=loop)
 
-bot = Bot(token=TOKEN, loop=loop)
+bot = Bot(token=environ("BOT_TOKEN"), loop=loop)
 
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
@@ -286,8 +285,7 @@ async def voices_handler(message: types.Message):
     else:
         await message.reply('If I understood you correctly, you said:\n\n' + text_from_voice)
         logger.debug('Checking results: %r', await check_answer(text_from_voice))
-        await message.reply(format_errors_explanation(await check_answer(text_from_voice)) \
-            + data['results'].append(MESSAGES['next_step']), 
+        await message.reply(format_errors_explanation(await check_answer(text_from_voice)), 
             parse_mode='Markdown',
             reply_markup=types.ReplyKeyboardRemove())
 
