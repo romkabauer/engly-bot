@@ -11,4 +11,4 @@ RUN pip install --upgrade pip
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-ENTRYPOINT ["python3", "bot.py"]
+ENTRYPOINT ["python3", "app/bot.py"]
