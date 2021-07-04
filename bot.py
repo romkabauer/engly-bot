@@ -4,7 +4,7 @@ import json
 import random
 import sys
 
-from os import remove, environ
+import os
 from pydub import AudioSegment
 from aiohttp import request
 import aiohttp
@@ -32,7 +32,7 @@ logger.setLevel(logging.DEBUG)
 loop: AbstractEventLoop = asyncio.new_event_loop()
 asyncio.set_event_loop(loop=loop)
 
-bot = Bot(token=environ("BOT_TOKEN"), loop=loop)
+bot = Bot(token=os.environ("BOT_TOKEN"), loop=loop)
 
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
@@ -133,8 +133,8 @@ async def process_voice(message):
     with open(converted_file_path, 'rb') as f:
         audio = dict(content=f.read())
     
-    remove(download_voices_path + str(message.message_id) + '.ogg')
-    remove(converted_file_path)
+    os.remove(download_voices_path + str(message.message_id) + '.ogg')
+    os.remove(converted_file_path)
 
     try:
         return speech_to_text(config, audio)[0]
