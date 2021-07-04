@@ -3,6 +3,7 @@ import typing
 import json
 import random
 import sys
+import boto3
 
 import os
 from pydub import AudioSegment
@@ -41,7 +42,6 @@ session: aiohttp.ClientSession = aiohttp.ClientSession()
 
 download_voices_path = '/home/app/voices/ogg/'
 converted_path = '/home/app/voices/flac/'
-api_key_path = '/home/app/google_sr_token.json'
 
 def cancel_keyboard():
     return types.ReplyKeyboardMarkup().row(*(
@@ -60,7 +60,19 @@ def list_keyboard():
     return keyboard
 
 def speech_to_text(config, audio):
-    client = speech.SpeechClient.from_service_account_json(api_key_path)
+    client = boto3.client(
+        's3',
+        aws_access_key_id = os.environ["AWS_ACCESS_KEY"],
+        aws_secret_access_key = os.environ["AWS_SECRET_KEY"],
+        region_name = 'eu-west-2'
+    )
+    obj = client.get_object(
+        Bucket = 'englybot',
+        Key = 'google_sr_token.json'
+    )
+    api_key = json.loads(obj['Body'].read().decode('utf-8'))
+
+    client = speech.SpeechClient.from_service_account_json(api_key)
     response = client.recognize(config=config, audio=audio)
     return get_transcript(response)
 
