@@ -42,6 +42,7 @@ session: aiohttp.ClientSession = aiohttp.ClientSession()
 
 download_voices_path = '/home/app/voices/ogg/'
 converted_path = '/home/app/voices/flac/'
+api_key_path = '/home/app/google_sr_token.json'
 
 def cancel_keyboard():
     return types.ReplyKeyboardMarkup().row(*(
@@ -60,19 +61,7 @@ def list_keyboard():
     return keyboard
 
 def speech_to_text(config, audio):
-    client = boto3.client(
-        's3',
-        aws_access_key_id = os.environ["AWS_ACCESS_KEY"],
-        aws_secret_access_key = os.environ["AWS_SECRET_KEY"],
-        region_name = 'eu-west-2'
-    )
-    obj = client.get_object(
-        Bucket = 'englybot',
-        Key = 'google_sr_token.json'
-    )
-    api_key = obj['Body'].read().decode('utf-8')
-
-    client = speech.SpeechClient.from_service_account_json(api_key)
+    client = speech.SpeechClient.from_service_account_json(api_key_path)
     response = client.recognize(config=config, audio=audio)
     return get_transcript(response)
 
@@ -301,6 +290,24 @@ async def voices_handler(message: types.Message):
             parse_mode='Markdown',
             reply_markup=types.ReplyKeyboardRemove())
 
+async def load_google_api_key(api_key_path):
+    client = boto3.client(
+        's3',
+        aws_access_key_id = os.environ["AWS_ACCESS_KEY"],
+        aws_secret_access_key = os.environ["AWS_SECRET_KEY"],
+        region_name = 'eu-west-2'
+    )
+    obj = client.get_object(
+        Bucket = 'englybot',
+        Key = 'google_sr_token.json'
+    )
+    api_key = obj['Body'].read().decode('utf-8')
+    with open(api_key_path, "w") as f:
+        f.write(api_key)
+
+async def on_startup(_):
+    asyncio.create_task(load_google_api_key(api_key_path))
+
 async def shutdown(dp):
     await dp.storage.close()
     await dp.storage.wait_closed()
@@ -308,4 +315,4 @@ async def shutdown(dp):
 
 if __name__ == '__main__':
     print("start")
-    executor.start_polling(dp, on_shutdown=shutdown, loop=loop)
+    executor.start_polling(dp, on_shutdown=shutdown, loop=loop, on_startup=on_startup)
