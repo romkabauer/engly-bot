@@ -70,7 +70,7 @@ def speech_to_text(config, audio):
         Bucket = 'englybot',
         Key = 'google_sr_token.json'
     )
-    api_key = json.loads(obj['Body'].read().decode('utf-8'))
+    api_key = obj['Body'].read().decode('utf-8')
 
     client = speech.SpeechClient.from_service_account_json(api_key)
     response = client.recognize(config=config, audio=audio)
